@@ -37,6 +37,8 @@ use std::sync::Arc;
 /// Serde JSON structure for a Cedar expression in the EST format
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi, from_wasm_abi))]
 pub enum Expr {
     /// Any Cedar expression other than an extension function call.
     /// We try to match this first, see docs on #[serde(untagged)].
@@ -52,6 +54,8 @@ pub enum Expr {
 #[serde_as]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi, from_wasm_abi))]
 pub enum ExprNoExt {
     /// Literal value (including anything that's legal to express in the
     /// attribute-value JSON format)
@@ -59,10 +63,13 @@ pub enum ExprNoExt {
     /// Var
     Var(ast::Var),
     /// Template slot
-    Slot(ast::SlotId),
+    Slot(
+        #[cfg_attr(feature = "wasm", tsify(type = "string"))] ast::SlotId
+    ),
     /// Unknown (for partial evaluation)
     Unknown {
         /// Name of the unknown
+        #[cfg_attr(feature = "wasm", tsify(type = "string"))]
         name: SmolStr,
     },
     /// `!`
@@ -259,6 +266,8 @@ pub enum ExprNoExt {
 /// Serde JSON structure for an extension function call in the EST format
 #[serde_as]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi, from_wasm_abi))]
 pub struct ExtFuncCall {
     /// maps the name of the function to a JSON list/array of the arguments.
     /// Note that for method calls, the method receiver is the first argument.
@@ -270,6 +279,7 @@ pub struct ExtFuncCall {
     /// we want.
     #[serde(flatten)]
     #[serde_as(as = "serde_with::MapPreventDuplicates<_,_>")]
+    #[cfg_attr(feature = "wasm", tsify(type = "Record<string, Array<Expr>>"))]
     call: HashMap<SmolStr, Vec<Expr>>,
 }
 

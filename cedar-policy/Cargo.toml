@@ -16,12 +16,15 @@ cedar-policy-validator = { version = "=3.0.0", path = "../cedar-policy-validator
 ref-cast = "1.0"
 serde = { version = "1.0", features = ["derive", "rc"] }
 serde_json = "1.0"
+serde-wasm-bindgen = { version = "0.4", optional = true }
 lalrpop-util = { version = "0.20.0", features = ["lexer"] }
 itertools = "0.10"
 thiserror = "1.0"
 smol_str = { version = "0.2", features = ["serde"] }
 dhat = { version = "0.3.2", optional = true}
 serde_with = "3.3.0"
+tsify = { version = "0.4.5", optional = true }
+wasm-bindgen = { version = "0.2.82", optional = true }
 
 
 [features]
@@ -43,9 +46,10 @@ integration_testing = []
 experimental = ["partial-eval", "permissive-validate"]
 partial-eval = ["cedar-policy-core/partial-eval"]
 permissive-validate = []
+wasm = ["wasm-bindgen", "serde-wasm-bindgen", "tsify"]
 
 [lib]
-crate_type = ["rlib"]
+crate_type = ["rlib", "cdylib"]
 
 [dev-dependencies]
 # Hack to enable the `integration_testing` feature for the `Cedar` integration

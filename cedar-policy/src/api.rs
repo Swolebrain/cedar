@@ -2738,6 +2738,11 @@ impl Policy {
         Ok::<_, PolicyToJsonError>(json)
     }
 
+    /// returns the json representation of a policy but strongly typed
+    pub fn to_json_policy(&self) -> Result<cedar_policy_core::est::Policy, impl std::error::Error> {
+        self.lossless.est()
+    }
+
     /// Create a `Policy` from its AST representation only. The `LosslessPolicy`
     /// will reflect the AST structure. When possible, don't use this method and
     /// create the `Policy` from the policy text, CST, or EST instead, as the

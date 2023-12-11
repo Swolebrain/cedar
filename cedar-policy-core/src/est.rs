@@ -34,10 +34,15 @@ use serde_with::serde_as;
 use smol_str::SmolStr;
 use std::collections::HashMap;
 
+#[cfg(feature = "wasm")]
+extern crate tsify;
+
 /// Serde JSON structure for policies and templates in the EST format
 #[serde_as]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi, from_wasm_abi))]
 pub struct Policy {
     /// `Effect` of the policy or template
     effect: ast::Effect,
@@ -53,6 +58,7 @@ pub struct Policy {
     #[serde(default)]
     #[serde(skip_serializing_if = "HashMap::is_empty")]
     #[serde_as(as = "serde_with::MapPreventDuplicates<_,_>")]
+    #[cfg_attr(feature = "wasm", tsify(type = "Record<string, string>"))]
     annotations: HashMap<ast::Id, SmolStr>,
 }
 
@@ -60,6 +66,8 @@ pub struct Policy {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(tag = "kind", content = "body")]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi, from_wasm_abi))]
 pub enum Clause {
     /// A `when` clause
     #[serde(rename = "when")]

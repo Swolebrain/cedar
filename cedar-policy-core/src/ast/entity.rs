@@ -27,6 +27,9 @@ use smol_str::SmolStr;
 use std::collections::{HashMap, HashSet};
 use thiserror::Error;
 
+#[cfg(feature = "wasm")]
+extern crate tsify;
+
 /// We support two types of entities. The first is a nominal type (e.g., User, Action)
 /// and the second is an unspecified type, which is used (internally) to represent cases
 /// where the input request does not provide a principal, action, and/or resource.
@@ -62,11 +65,15 @@ impl std::fmt::Display for EntityType {
 
 /// Unique ID for an entity. These represent entities in the AST.
 #[derive(Serialize, Deserialize, PartialEq, Eq, Debug, Clone, Hash, PartialOrd, Ord)]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi, from_wasm_abi))]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct EntityUID {
     /// Typename of the entity
+    #[cfg_attr(feature = "wasm", tsify(type="String"))]
     ty: EntityType,
     /// EID of the entity
+    #[cfg_attr(feature = "wasm", tsify(type="String"))]
     eid: Eid,
 }
 
