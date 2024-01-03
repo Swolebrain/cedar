@@ -94,7 +94,7 @@ pub enum CedarValueJson {
     /// JSON object => Cedar record; must have string keys, but values
     /// can be any `CedarValueJson`s, even heterogeneously
     Record(
-        #[cfg_attr(feature = "wasm", tsify(type="Record<string, CedarValueJson>"))] JsonRecord
+        #[cfg_attr(feature = "wasm", tsify(type="{[key: string]: CedarValueJson}"))] JsonRecord
     ),
 }
 

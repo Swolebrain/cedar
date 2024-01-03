@@ -2,7 +2,7 @@ use cargo_lock::Lockfile;
 
 fn main() {
     println!("cargo:rerun-if-changed=Cargo.lock");
-    let lockfile = Lockfile::load("Cargo.lock").expect("a valid lockfile");
+    let lockfile = Lockfile::load("../Cargo.lock").expect("a valid lockfile");
     let mut iter = lockfile
         .packages
         .into_iter()
